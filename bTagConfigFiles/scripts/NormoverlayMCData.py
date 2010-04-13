@@ -149,11 +149,13 @@ def draw(mc, data, xTit, yTit, title, left, blind):
 	f1 = 1.4
         stack = ROOT.THStack( "b-tag stack", title )
 
+        #Stacking order b first, then charm, then light
+	stack.Add(mc[3])
+	stack.Add(mc[2])
 	stack.Add(mc[1])
 	stack.Add(mc[0])
-	stack.Add(mc[2])
-	stack.Add(mc[3])
-        stack.SetMaximum( max(data.GetMaximum(), mc[4].GetMaximum()) * f1)
+
+        data.SetMaximum( max(data.GetMaximum(), mc[4].GetMaximum()) * f1)
 #        stack.SetMinimum( 0 )
 
 	stack.SetTitle("")
@@ -193,8 +195,8 @@ def draw(mc, data, xTit, yTit, title, left, blind):
 	ROOT.gPad.SetLogy(True)
 
 	f2 = 2.5
-        stack.SetMaximum( max(data.GetMaximum(), mc[4].GetMaximum()) * f2)
-        stack.SetMinimum( 0.2 )
+        data.SetMaximum( max(data.GetMaximum(), mc[4].GetMaximum()) * f2)
+        data.SetMinimum( 0.2 )
 
 	data.Draw("E")
 	stack.Draw("histsame")
