@@ -20,7 +20,9 @@ class Canvas:
 		self.c.cd()
 
 	def Print(self, p):
-		self.c.Print("PlotsArea/%s.png" % p)		
+		self.c.Print("PlotsLumi/%s.png" % p)		
+### For area normalization
+#		self.c.Print("PlotsArea/%s.png" % p) 
 #		self.c.Print("PlotsArea/%s.eps" % p)
 #		os.system("sed -e 's/0\\.95 0\\.95 0\\.95/1.0 1.0 1.0/g' -i 'PlotsArea/%s.eps'" % p)
 #		os.system("epstopdf 'PlotsArea/%s.eps'" % p)
@@ -120,7 +122,7 @@ def rebin(list, tmpl):
 			new.Fill(old.GetBinCenter(j), old.GetBinContent(j))
 		list[i] = new
 
-def draw(mc, data, xTit, yTit, title, left, blind):
+def draw(mc, data, xTit, yTit, title, category, left, blind):
 	global keep
 
 	c = Canvas()
@@ -222,6 +224,7 @@ def draw(mc, data, xTit, yTit, title, left, blind):
 	hratio.SetMarkerColor(4)
 	hratio.SetLineWidth(2)
 
+	hratio.GetYaxis().SetRangeUser(0., 3.0)
 	hratio.Draw("e")
 
 	ratio = 'ratio_'+title
@@ -235,18 +238,68 @@ def main(args, left, blind):
 	data = ROOT.TFile.Open("data.root")
 
 	histo = args[0]
+        ##### IP Tag Infos
 	if histo[0] == 'i' and histo[1] == 'p':
-		histo = histo[2:] + "_impactParameterTagInfos_GLOBAL"
-		pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_impactParameterTagInfos_GLOBAL"
+		if args[1] == 'loosePF':
+			histo = histo[2:] + "_looseImpactParameterPFTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_looseImpactParameterPFTagInfos_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[2:] + "_standardImpactParameterPFTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_standardImpactParameterPFTagInfos_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[2:] + "_looseImpactParameterCaloTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_looseImpactParameterCaloTagInfos_GLOBAL"
+		else:
+			histo = histo[2:] + "_standardImpactParameterCaloTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_standardImpactParameterCaloTagInfos_GLOBAL"
+        ##### SV Tag Infos
 	elif histo[0] == 's' and histo[1] == 'v':
-		histo = histo[2:]
-		pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_combinedSecondaryVertex_GLOBAL"
+		if args[1] == 'loosePF':
+			histo = histo[2:]
+			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_looseCombinedSecondaryVertexPF_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[2:]
+			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_standardCombinedSecondaryVertexPF_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[2:]
+			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_looseCombinedSecondaryVertexCalo_GLOBAL"
+		else:
+			histo = histo[2:]
+			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_standardCombinedSecondaryVertexCalo_GLOBAL"
+        ##### Soft Muon Tag Infos
+	elif histo[0] == 'm' and histo[1] == 'u':
+		if args[1] == 'loosePF':
+			histo = histo[2:]
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftMuonPFTagInfos_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[2:]
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftMuonPFTagInfos_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[2:]
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftMuonCaloTagInfos_GLOBAL"
+		else:
+			histo = histo[2:]
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftMuonCaloTagInfos_GLOBAL"
+        ##### Soft Electron Tag Infos
 	elif histo[0] == 'e' and histo[1] == 'l':
-		histo = histo[2:] #+ "_softElectronTagInfos_GLOBAL"
-		pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_softElectronTagInfos_GLOBAL"
+		if args[1] == 'loosePF':
+			histo = histo[2:] 
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftElectronPFTagInfos_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[2:] 
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftElectronPFTagInfos_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[2:] 
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftElectronCaloTagInfos_GLOBAL"
+		else:
+			histo = histo[2:] 
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftElectronCaloTagInfos_GLOBAL"
 	else:
-		pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_softMuonTagInfos_GLOBAL"
+		print "Nothing to draw!"
 
+
+	
+        #####################			
 	print pfx, histo
 
 	mc = [
@@ -261,22 +314,28 @@ def main(args, left, blind):
 
 #### Scale MC to the data area
 #### The MC histograms are normalized to the area of the data histograms
-	for i in range(5):
+#	for i in range(5):
 #		print "Scaling mc", i
-		mc[i].Scale(mc[-1].Integral()/mc[4].Integral())
+#		mc[i].Scale(mc[-1].Integral()/mc[4].Integral())
+
+#### Scale MC to data lumi ...Data/MC ratio
+## Data lumi = 199.58 ub-1 and MC lumi = 157.12 ub-1
+	scale = 1.27
+	for i in range(5):
+		mc[i].Scale(1.27)
 ##################
 
 	if len(args) > 3:
-		tmpl = ROOT.TH1F("tmpl", "", int(args[3]), float(args[4]), float(args[5]))
 		mc[4].GetXaxis().SetRangeUser(float(args[4]), float(args[5]))
 		mc[-1].GetXaxis().SetRangeUser(float(args[4]), float(args[5]))
-#		rebin(mc, tmpl)
 
 	for i, j in enumerate(mc):
 		j.SetTitle("")
 #		format(j, i)
+	
+	newTitle = args[0]+"_"+args[1]
 
-	draw(mc[:-1], mc[-1], args[1], args[2], args[0], left, blind)
+	draw(mc[:-1], mc[-1], args[2], args[3], newTitle, args[1], left, blind)
 
 if __name__ == '__main__':
 	app = ROOT.gApplication

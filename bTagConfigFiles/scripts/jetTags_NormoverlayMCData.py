@@ -20,7 +20,9 @@ class Canvas:
 		self.c.cd()
 
 	def Print(self, p):
-		self.c.Print("PlotsArea/%s.png" % p)		
+		self.c.Print("PlotsLumi/%s.png" % p)		
+### For area normalization
+#		self.c.Print("PlotsArea/%s.png" % p)
 #		self.c.Print("PlotsArea/%s.eps" % p)
 #		os.system("sed -e 's/0\\.95 0\\.95 0\\.95/1.0 1.0 1.0/g' -i 'PlotsArea/%s.eps'" % p)
 #		os.system("epstopdf 'PlotsArea/%s.eps'" % p)
@@ -120,7 +122,7 @@ def rebin(list, tmpl):
 			new.Fill(old.GetBinCenter(j), old.GetBinContent(j))
 		list[i] = new
 
-def draw(mc, data, xTit, yTit, title, left, blind):
+def draw(mc, data, xTit, yTit, title, category, left, blind):
 	global keep
 
 	c = Canvas()
@@ -221,7 +223,8 @@ def draw(mc, data, xTit, yTit, title, left, blind):
 	hratio.SetMarkerSize(1.2)
 	hratio.SetMarkerColor(4)
 	hratio.SetLineWidth(2)
-
+	hratio.GetYaxis().SetRangeUser(0., 3.)
+	
 	hratio.Draw("e")
 
 	ratio = 'ratio_'+title
@@ -236,76 +239,202 @@ def main(args, left, blind):
 
 	histo = args[0]
 	## TCHP
-	if histo[0] == 'p' and histo[1] == '0':
-		histo = histo[2:] + "_trackCountingHighPurBJetTags_GLOBAL"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_trackCountingHighPurBJetTags_GLOBAL"
-	if histo[0] == 'p' and histo[1] == '1':
-		histo = histo[2:] + "_trackCountingHighPurBJetTags_PT_10-20"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_trackCountingHighPurBJetTags_PT_10-20"
-	if histo[0] == 'p' and histo[1] == '2':
-		histo = histo[2:] + "_trackCountingHighPurBJetTags_PT_20-40"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_trackCountingHighPurBJetTags_PT_20-40"
+	if histo[0] == 'T' and histo[1] == 'P' and histo[2] == '0':
+		if args[1] == 'loosePF':		
+			histo = histo[3:] + "_looseTrackCountingHighPurPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseTrackCountingHighPurPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':		
+			histo = histo[3:] + "_standardTrackCountingHighPurPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardTrackCountingHighPurPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':		
+			histo = histo[3:] + "_looseTrackCountingHighPurCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseTrackCountingHighPurCaloBJetTags_GLOBAL"
+		else:
+			histo = histo[3:] + "_standardTrackCountingHighPurCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardTrackCountingHighPurCaloBJetTags_GLOBAL"
+
 	## TCHE
-	elif histo[0] == 'e' and histo[1] == '0':
-		histo = histo[2:] + "_trackCountingHighEffBJetTags_GLOBAL"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_trackCountingHighEffBJetTags_GLOBAL"
-	elif histo[0] == 'e' and histo[1] == '1':
-		histo = histo[2:] + "_trackCountingHighEffBJetTags_PT_10-20"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_trackCountingHighEffBJetTags_PT_10-20"
-	elif histo[0] == 'e' and histo[1] == '2':
-		histo = histo[2:] + "_trackCountingHighEffBJetTags_PT_20-40"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_trackCountingHighEffBJetTags_PT_20-40"		
+	elif histo[0] == 'T' and histo[1] == 'E' and histo[2] == '0':		
+		if args[1] == 'loosePF':		
+			histo = histo[3:] + "_looseTrackCountingHighEffPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseTrackCountingHighEffPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':		
+			histo = histo[3:] + "_standardTrackCountingHighEffPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardTrackCountingHighEffPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':		
+			histo = histo[3:] + "_looseTrackCountingHighEffCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseTrackCountingHighEffCaloBJetTags_GLOBAL"
+		else:
+			histo = histo[3:] + "_standardTrackCountingHighEffCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardTrackCountingHighEffCaloBJetTags_GLOBAL"
+
 	## Jet prob
-	elif histo[0] == 'j' and histo[1] == '0':
-		histo = histo[2:] + "_jetProbabilityBJetTags_GLOBAL"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_jetProbabilityBJetTags_GLOBAL"
-	elif histo[0] == 'j' and histo[1] == '1':
-		histo = histo[2:] + "_jetProbabilityBJetTags_PT_10-20"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_jetProbabilityBJetTags_PT_10-20"
-	elif histo[0] == 'j' and histo[1] == '2':
-		histo = histo[2:] + "_jetProbabilityBJetTags_PT_20-40"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_jetProbabilityBJetTags_PT_20-40"
+	elif histo[0] == 'J' and histo[1] == 'P' and histo[2] == '0':
+		if args[1] == 'loosePF':		
+			histo = histo[3:] + "_looseJetProbabilityPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseJetProbabilityPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':		
+			histo = histo[3:] + "_standardJetProbabilityPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardJetProbabilityPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':		
+			histo = histo[3:] + "_looseJetProbabilityCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseJetProbabilityCaloBJetTags_GLOBAL"
+		else :
+			histo = histo[3:] + "_standardJetProbabilityCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardJetProbabilityCaloBJetTags_GLOBAL"		       
+
 	## Jet B prob
-	elif histo[0] == 'b' and histo[1] == '0':
-		histo = histo[2:] + "_jetBProbabilityBJetTags_GLOBAL"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_jetBProbabilityBJetTags_GLOBAL"
-	elif histo[0] == 'b' and histo[1] == '1':
-		histo = histo[2:] + "_jetBProbabilityBJetTags_PT_10-20"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_jetBProbabilityBJetTags_PT_10-20"
-	elif histo[0] == 'b' and histo[1] == '2':
-		histo = histo[2:] + "_jetBProbabilityBJetTags_PT_20-40"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_jetBProbabilityBJetTags_PT_20-40"		
-	## SSV
-	elif histo[0] == 's' and histo[1] == '0':
-		histo = histo[2:] + "_simpleSecondaryVertexBJetTags_GLOBAL"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_simpleSecondaryVertexBJetTags_GLOBAL"
-	elif histo[0] == 's' and histo[1] == '1':
-		histo = histo[2:] + "_simpleSecondaryVertexBJetTags_PT_10-20"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_simpleSecondaryVertexBJetTags_PT_10-20"		
-	elif histo[0] == 's' and histo[1] == '2':
-		histo = histo[2:] + "_simpleSecondaryVertexBJetTags_PT_20-40"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_simpleSecondaryVertexBJetTags_PT_20-40"
+	elif histo[0] == 'J' and histo[1] == 'B' and histo[2] == '0':
+		if args[1] == 'loosePF':		
+			histo = histo[3:] + "_looseJetBProbabilityPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseJetBProbabilityPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':		
+			histo = histo[3:] + "_standardJetBProbabilityPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardJetBProbabilityPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':		
+			histo = histo[3:] + "_looseJetBProbabilityCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseJetBProbabilityCaloBJetTags_GLOBAL"
+		else :
+			histo = histo[3:] + "_standardJetBProbabilityCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardJetBProbabilityCaloBJetTags_GLOBAL"	       
+
+	## SSV High Eff (>=2 tracks)
+	elif histo[0] == 'S' and histo[1] == 'E' and histo[2] == '0':		
+		if args[1] == 'loosePF':
+			histo = histo[3:] + "_looseSimpleSecondaryVertexPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSimpleSecondaryVertexPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[3:] + "_standardSimpleSecondaryVertexPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSimpleSecondaryVertexPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[3:] + "_looseSimpleSecondaryVertexCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSimpleSecondaryVertexCaloBJetTags_GLOBAL"
+		else :
+			histo = histo[3:] + "_standardSimpleSecondaryVertexCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSimpleSecondaryVertexCaloBJetTags_GLOBAL"
+
+	## SSV High Purity (>=3 tracks)
+	elif histo[0] == 'S' and histo[1] == 'P' and histo[2] == '0':			
+		if args[1] == 'loosePF':
+			histo = histo[3:] + "_looseSimpleSecondaryVertexHighPurPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSimpleSecondaryVertexHighPurPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[3:] + "_standardSimpleSecondaryVertexHighPurPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSimpleSecondaryVertexHighPurPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[3:] + "_looseSimpleSecondaryVertexHighPurCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSimpleSecondaryVertexHighPurCaloBJetTags_GLOBAL"
+		else :
+			histo = histo[3:] + "_standardSimpleSecondaryVertexHighPurCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSimpleSecondaryVertexHighPurCaloBJetTags_GLOBAL"
+
 	## CSV
-	elif histo[0] == 'c' and histo[1] == '0':
-		histo = histo[2:] + "_combinedSecondaryVertexBJetTags_GLOBAL"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_combinedSecondaryVertexBJetTags_GLOBAL"
-	elif histo[0] == 'c' and histo[1] == '1':
-		histo = histo[2:] + "_combinedSecondaryVertexBJetTags_PT_10-20"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_combinedSecondaryVertexBJetTags_PT_10-20"
-	elif histo[0] == 'c' and histo[1] == '2':
-		histo = histo[2:] + "_combinedSecondaryVertexBJetTags_PT_20-40"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_combinedSecondaryVertexBJetTags_PT_20-40"		
+	elif histo[0] == 'C' and histo[1] == 'S' and histo[2] == '0':
+		if args[1] == 'loosePF':
+			histo = histo[3:] + "_looseCombinedSecondaryVertexPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseCombinedSecondaryVertexPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[3:] + "_standardCombinedSecondaryVertexPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardCombinedSecondaryVertexPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[3:] + "_looseCombinedSecondaryVertexCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseCombinedSecondaryVertexCaloBJetTags_GLOBAL"
+		else:
+			histo = histo[3:] + "_standardCombinedSecondaryVertexCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardCombinedSecondaryVertexCaloBJetTags_GLOBAL"
+
 	## CSV MVA
-	elif histo[0] == 'm' and histo[1] == '0':
-		histo = histo[2:] + "_combinedSecondaryVertexMVABJetTags_GLOBAL"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_combinedSecondaryVertexMVABJetTags_GLOBAL"
-	elif histo[0] == 'm' and histo[1] == '1':
-		histo = histo[2:] + "_combinedSecondaryVertexMVABJetTags_PT_10-20"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_combinedSecondaryVertexMVABJetTags_PT_10-20"
-	elif histo[0] == 'm' and histo[1] == '2':
-		histo = histo[2:] + "_combinedSecondaryVertexMVABJetTags_PT_20-40"
-		pfx = "DQMData/Run 1/Btag/Run summary/JetTag_combinedSecondaryVertexMVABJetTags_PT_20-40"
+	elif histo[0] == 'C' and histo[1] == 'M' and histo[2] == '0':			
+		if args[1] == 'loosePF':
+			histo = histo[3:] + "_looseCombinedSecondaryVertexMVAPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseCombinedSecondaryVertexMVAPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[3:] + "_standardCombinedSecondaryVertexMVAPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardCombinedSecondaryVertexMVAPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[3:] + "_looseCombinedSecondaryVertexMVACaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseCombinedSecondaryVertexMVACaloBJetTags_GLOBAL"
+		else:
+			histo = histo[3:] + "_standardCombinedSecondaryVertexMVACaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardCombinedSecondaryVertexMVACaloBJetTags_GLOBAL"
+
+	## SoftMuonByIP3d
+	elif histo[0] == 'M' and histo[1] == 'I' and histo[2] == '0':			
+		if args[1] == 'loosePF':
+			histo = histo[3:] + "_looseSoftMuonByIP3dPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSoftMuonByIP3dPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[3:] + "_standardSoftMuonByIP3dPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSoftMuonByIP3dPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[3:] + "_looseSoftMuonByIP3dCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSoftMuonByIP3dCaloBJetTags_GLOBAL"
+		else:
+			histo = histo[3:] + "_standardSoftMuonByIP3dCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSoftMuonByIP3dCaloBJetTags_GLOBAL"
+
+	## SoftMuonByPt
+	elif histo[0] == 'M' and histo[1] == 'P' and histo[2] == '0':			
+		if args[1] == 'loosePF':
+			histo = histo[3:] + "_looseSoftMuonByPtPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSoftMuonByPtPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[3:] + "_standardSoftMuonByPtPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSoftMuonByPtPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[3:] + "_looseSoftMuonByPtCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSoftMuonByPtCaloBJetTags_GLOBAL"
+		else:
+			histo = histo[3:] + "_standardSoftMuonByPtCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSoftMuonByPtCaloBJetTags_GLOBAL"
+
+	## SoftMuon
+	elif histo[0] == 'M' and histo[1] == 'U' and histo[2] == '0':			
+		if args[1] == 'loosePF':
+			histo = histo[3:] + "_looseSoftMuonPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSoftMuonPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[3:] + "_standardSoftMuonPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSoftMuonPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[3:] + "_looseSoftMuonCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSoftMuonCaloBJetTags_GLOBAL"
+		else:
+			histo = histo[3:] + "_standardSoftMuonCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSoftMuonCaloBJetTags_GLOBAL"
+
+	## SoftElectronByIP3d
+	elif histo[0] == 'E' and histo[1] == 'I' and histo[2] == '0':			
+		if args[1] == 'loosePF':
+			histo = histo[3:] + "_looseSoftElectronByIP3dPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSoftElectronByIP3dPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[3:] + "_standardSoftElectronByIP3dPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSoftElectronByIP3dPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[3:] + "_looseSoftElectronByIP3dCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSoftElectronByIP3dCaloBJetTags_GLOBAL"
+		else:
+			histo = histo[3:] + "_standardSoftElectronByIP3dCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSoftElectronByIP3dCaloBJetTags_GLOBAL"
+
+	## SoftElectronByPt
+	elif histo[0] == 'E' and histo[1] == 'P' and histo[2] == '0':			
+		if args[1] == 'loosePF':
+			histo = histo[3:] + "_looseSoftElectronByPtPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSoftElectronByPtPFBJetTags_GLOBAL"
+		elif args[1] == 'standardPF':
+			histo = histo[3:] + "_standardSoftElectronByPtPFBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSoftElectronByPtPFBJetTags_GLOBAL"
+		elif args[1] == 'looseCalo':
+			histo = histo[3:] + "_looseSoftElectronByPtCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_looseSoftElectronByPtCaloBJetTags_GLOBAL"
+		else:
+			histo = histo[3:] + "_standardSoftElectronByPtCaloBJetTags_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/JetTag_standardSoftElectronByPtCaloBJetTags_GLOBAL"
+
 	else :
+		pfx = "!!Nothing to draw!!"
 		print "Nothing to draw"
 		
 
@@ -323,22 +452,29 @@ def main(args, left, blind):
 
 #### Scale MC to the data area
 #### The MC histograms are normalized to the area of the data histograms
-	for i in range(5):
+#	for i in range(5):
 #		print "Scaling mc", i
-		mc[i].Scale(mc[-1].Integral()/mc[4].Integral())
+#		mc[i].Scale(mc[-1].Integral()/mc[4].Integral())
+
+#### Scale MC to data lumi ...Data/MC ratio
+## Data lumi = 199.58 ub-1 and MC lumi = 157.12 ub-1
+	scale = 1.27
+	for i in range(5):
+		mc[i].Scale(1.27)
 ##################
 
-	if len(args) > 3:
-		tmpl = ROOT.TH1F("tmpl", "", int(args[3]), float(args[4]), float(args[5]))
-		mc[4].GetXaxis().SetRangeUser(float(args[4]), float(args[5]))
-		mc[-1].GetXaxis().SetRangeUser(float(args[4]), float(args[5]))
+#	if len(args) > 3:
+#		mc[4].GetXaxis().SetRangeUser(float(args[4]), float(args[5]))
+#		mc[-1].GetXaxis().SetRangeUser(float(args[4]), float(args[5]))
 #		rebin(mc, tmpl)
 
 	for i, j in enumerate(mc):
 		j.SetTitle("")
 #		format(j, i)
 
-	draw(mc[:-1], mc[-1], args[1], args[2], args[0], left, blind)
+	newTitle = args[0]+"_"+args[1]
+
+	draw(mc[:-1], mc[-1], args[2], args[3], newTitle, args[1], left, blind)
 
 if __name__ == '__main__':
 	app = ROOT.gApplication
