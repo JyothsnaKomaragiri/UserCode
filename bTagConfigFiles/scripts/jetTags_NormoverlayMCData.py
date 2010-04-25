@@ -498,7 +498,7 @@ def main(args, left, blind):
 		j.SetTitle("")
 
 	newTitle = args[0]+"_"+args[1]+"_"+args[2]
-#	xTitle = args[2]+" "+args[3]
+
 	draw(mc[:-1], mc[-1], args[3], args[4], newTitle, args[1], args[2], left, blind)
 
 if __name__ == '__main__':
