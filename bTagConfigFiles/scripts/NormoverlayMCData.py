@@ -122,7 +122,34 @@ def rebin(list, tmpl):
 			new.Fill(old.GetBinCenter(j), old.GetBinContent(j))
 		list[i] = new
 
-def draw(mc, data, xTit, yTit, title, category, left, blind):
+def prelim(header):
+	t = ROOT.TPaveText(0.2, 0.92, 0.7, 0.97, "brNDC")
+	title = " "
+
+	if header == "GLOBAL":
+		title = "p_{T} > 10 GeV and |#eta| < 2.5"
+	elif header == "PT_10-20":
+		title = "10 < p_{T} < 20 GeV and |#eta| < 2.5"
+	elif header == "PT_20-40":
+		title = "20 < p_{T} < 40 GeV and |#eta| < 2.5"
+	elif header == "PT_40-99999" :
+		title = "p_{T} > 40 GeV and |#eta| < 2.5"
+	elif header == "ETA_0-1v5_PT_40-99999" :
+		title = "p_{T} > 40 GeV and 0 < |#eta| < 1.5"
+	else: #"ETA_1v5-2v5_PT_40-99999"
+		title = "p_{T} > 40 GeV and 1.5 < |#eta| < 2.5"
+
+	t.AddText(title)
+	t.SetTextSize(0.035)
+	t.SetFillStyle(0)
+	t.SetBorderSize(0)
+	t.SetTextAlign(13)
+	t.SetMargin(0.0)
+	t.SetFillColor(0)
+	t.Draw("SAME")
+	return t
+
+def draw(mc, data, xTit, yTit, title, category, bintype, left, blind):
 	global keep
 
 	c = Canvas()
@@ -189,6 +216,7 @@ def draw(mc, data, xTit, yTit, title, category, left, blind):
 	else :
 		l.AddEntry(mc[4], "MC")
 	l.Draw()
+	keep.append(prelim(bintype))
 
 	c.Print(title)
 
@@ -205,6 +233,7 @@ def draw(mc, data, xTit, yTit, title, category, left, blind):
 	data.Draw("sameE")
 
 	l.Draw()
+	keep.append(prelim(bintype))
 	
 	newtitle = 'log_'+title
 	c.Print(newtitle)
@@ -226,6 +255,7 @@ def draw(mc, data, xTit, yTit, title, category, left, blind):
 
 	hratio.GetYaxis().SetRangeUser(0., 3.0)
 	hratio.Draw("e")
+	keep.append(prelim(bintype))
 
 	ratio = 'ratio_'+title
 	c.Print(ratio)
@@ -241,64 +271,63 @@ def main(args, left, blind):
         ##### IP Tag Infos
 	if histo[0] == 'i' and histo[1] == 'p':
 		if args[1] == 'loosePF':
-			histo = histo[2:] + "_looseImpactParameterPFTagInfos_GLOBAL"
-			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_looseImpactParameterPFTagInfos_GLOBAL"
+			histo = histo[2:] + "_looseImpactParameterPFTagInfos_"+args[2]
+			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_looseImpactParameterPFTagInfos_"+args[2]
 		elif args[1] == 'standardPF':
-			histo = histo[2:] + "_standardImpactParameterPFTagInfos_GLOBAL"
-			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_standardImpactParameterPFTagInfos_GLOBAL"
+			histo = histo[2:] + "_standardImpactParameterPFTagInfos_"+args[2]
+			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_standardImpactParameterPFTagInfos_"+args[2]
 		elif args[1] == 'looseCalo':
-			histo = histo[2:] + "_looseImpactParameterCaloTagInfos_GLOBAL"
-			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_looseImpactParameterCaloTagInfos_GLOBAL"
+			histo = histo[2:] + "_looseImpactParameterCaloTagInfos_"+args[2]
+			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_looseImpactParameterCaloTagInfos_"+args[2]
 		else:
-			histo = histo[2:] + "_standardImpactParameterCaloTagInfos_GLOBAL"
-			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_standardImpactParameterCaloTagInfos_GLOBAL"
+			histo = histo[2:] + "_standardImpactParameterCaloTagInfos_"+args[2]
+			pfx = "DQMData/Run 1/Btag/Run summary/TrackIPPlots_standardImpactParameterCaloTagInfos_"+args[2]
         ##### SV Tag Infos
 	elif histo[0] == 's' and histo[1] == 'v':
 		if args[1] == 'loosePF':
 			histo = histo[2:]
-			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_looseCombinedSecondaryVertexPF_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_looseCombinedSecondaryVertexPF_"+args[2]
 		elif args[1] == 'standardPF':
 			histo = histo[2:]
-			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_standardCombinedSecondaryVertexPF_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_standardCombinedSecondaryVertexPF_"+args[2]
 		elif args[1] == 'looseCalo':
 			histo = histo[2:]
-			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_looseCombinedSecondaryVertexCalo_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_looseCombinedSecondaryVertexCalo_"+args[2]
 		else:
 			histo = histo[2:]
-			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_standardCombinedSecondaryVertexCalo_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/TaggingVariable_standardCombinedSecondaryVertexCalo_"+args[2]
         ##### Soft Muon Tag Infos
 	elif histo[0] == 'm' and histo[1] == 'u':
 		if args[1] == 'loosePF':
 			histo = histo[2:]
-			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftMuonPFTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftMuonPFTagInfos_"+args[2]
 		elif args[1] == 'standardPF':
 			histo = histo[2:]
-			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftMuonPFTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftMuonPFTagInfos_"+args[2]
 		elif args[1] == 'looseCalo':
 			histo = histo[2:]
-			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftMuonCaloTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftMuonCaloTagInfos_"+args[2]
 		else:
 			histo = histo[2:]
-			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftMuonCaloTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftMuonCaloTagInfos_"+args[2]
         ##### Soft Electron Tag Infos
 	elif histo[0] == 'e' and histo[1] == 'l':
 		if args[1] == 'loosePF':
 			histo = histo[2:] 
-			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftElectronPFTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftElectronPFTagInfos_"+args[2]
 		elif args[1] == 'standardPF':
 			histo = histo[2:] 
-			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftElectronPFTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftElectronPFTagInfos_"+args[2]
 		elif args[1] == 'looseCalo':
 			histo = histo[2:] 
-			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftElectronCaloTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_looseSoftElectronCaloTagInfos_"+args[2]
 		else:
 			histo = histo[2:] 
-			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftElectronCaloTagInfos_GLOBAL"
+			pfx = "DQMData/Run 1/Btag/Run summary/SoftLepton_standardSoftElectronCaloTagInfos_"+args[2]
 	else:
-		print "Nothing to draw!"
+		pfx = "!!Nothing to draw!!"
+		print "Nothing to draw"
 
-
-	
         #####################			
 	print pfx, histo
 
@@ -325,9 +354,9 @@ def main(args, left, blind):
 		mc[i].Scale(1.27)
 ##################
 
-	if len(args) > 3:
-		mc[4].GetXaxis().SetRangeUser(float(args[4]), float(args[5]))
-		mc[-1].GetXaxis().SetRangeUser(float(args[4]), float(args[5]))
+	if len(args) > 5:
+		mc[4].GetXaxis().SetRangeUser(float(args[5]), float(args[6]))
+		mc[-1].GetXaxis().SetRangeUser(float(args[5]), float(args[6]))
 
 	for i, j in enumerate(mc):
 		j.SetTitle("")
@@ -335,7 +364,7 @@ def main(args, left, blind):
 	
 	newTitle = args[0]+"_"+args[1]
 
-	draw(mc[:-1], mc[-1], args[2], args[3], newTitle, args[1], left, blind)
+	draw(mc[:-1], mc[-1], args[3], args[4], newTitle, args[1], args[2], left, blind)
 
 if __name__ == '__main__':
 	app = ROOT.gApplication
