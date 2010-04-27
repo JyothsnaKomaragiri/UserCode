@@ -6,7 +6,7 @@ for category in `echo "loosePF" "standardPF" "looseCalo" "standardCalo"`
 do
 
 ### Loop over bins
-for bin in `echo "GLOBAL" "PT_10-20" "PT_20-40" "PT_40-99999" "ETA_0-1v5_PT_40-99999" "ETA_1v5-2v5_PT_40-99999"`
+for bin in `echo "GLOBAL" "PT_10-20" "PT_20-40" "PT_40-99999" "ETA_0-1v5_PT_10-20" "ETA_1v5-2v5_PT_10-20" "ETA_0-1v5_PT_20-40" "ETA_1v5-2v5_PT_20-40" "ETA_0-1v5_PT_40-99999" "ETA_1v5-2v5_PT_40-99999"`
 do
 
 ###############################################################
