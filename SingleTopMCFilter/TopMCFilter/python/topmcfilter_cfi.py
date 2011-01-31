@@ -4,10 +4,10 @@ topTruthFilter = cms.EDFilter("TopMCLepJetFilter",
                               truthVector = cms.InputTag("genParticles"),
                               jetsVector = cms.InputTag("kt4GenJets"),
                               daughterIds = cms.vint32(11), #PDGID is: 11 for electrons and 13 for muons
-                              leptonPt = cms.untracked.double(30.),
-                              leptonEta = cms.untracked.double(2.5),
-                              genJetPt = cms.untracked.double(30.),
-                              genJetEta = cms.untracked.double(8.0),
-                              dRcut = cms.untracked.double(0.3),
-                              nGoodJets = cms.untracked.uint32(2)
+                              leptonPt = cms.double(30.),
+                              leptonEta = cms.double(2.5),
+                              genJetPt = cms.double(30.),
+                              genJetEta = cms.double(8.0),
+                              dRcut = cms.double(0.3),
+                              nGoodJets = cms.uint32(2)
                               )
