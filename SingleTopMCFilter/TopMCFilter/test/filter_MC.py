@@ -29,7 +29,7 @@ process.topTruthFilter = cms.EDFilter("TopFilter",
                                       genJetPt = cms.untracked.double(30.),
                                       genJetEta = cms.untracked.double(8.0),
                                       dRcut = cms.untracked.double(0.3),
-                                      nGoodJets = cms.untracked.uint(2)
+                                      nGoodJets = cms.untracked.uint32(2)
                                      )
 
 
